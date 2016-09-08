@@ -15,7 +15,7 @@ LINK = g++
 # Turn on optimization and warnings (add -g for debugging with gdb):
 # CPPFLAGS = 		# preprocessor flags
 CFLAGS = -O -Wall
-CXXFLAGS = -O -Wall
+CXXFLAGS = -O -Wall -std=c++11
 
 # OpenGL/Mesa libraries for Linux:
 GL_LIBS = -lglut -lGLU -lGL -lm
@@ -36,11 +36,7 @@ GL_LIBS = -lglut -lGLU -lGL -lm
 all:    TankWars
 
 # specific targets
-TankWars:	TankWars.o
-	$(LINK) -o $@ $^ $(GL_LIBS)
-
-# typical target entry, builds "myprog" from file1.cpp, file2.cpp, file3.cpp
-myprog:	file1.o file2.o file3.o
+TankWars:	TankWars.o Terrain.o
 	$(LINK) -o $@ $^ $(GL_LIBS)
 
 # generic C and C++ targets for OpenGL programs consisting of only one file
