@@ -18,6 +18,8 @@ int main( int argc, char *argv[] )
 
     Terrain myTerrain;
 
+    myTerrain.DisplaceTerrain(4, 50);
+
     init();
     glutDisplayFunc( myTerrain.DrawTerrain );
     glutMainLoop();
