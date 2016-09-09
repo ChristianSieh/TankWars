@@ -21,6 +21,7 @@ void init( void );
 void display( void );
 void special( int key, int x, int y);
 void keyboard( unsigned char key, int x, int y );
+void resolve();
 
 int main( int argc, char *argv[] )
 {
@@ -34,7 +35,8 @@ int main( int argc, char *argv[] )
     init();
     glutDisplayFunc( display );
     glutSpecialFunc( special );
-    glutKeyboardFunc( keyboard ); 
+    glutKeyboardFunc( keyboard );
+    glutIdleFunc( display ); 
     glutMainLoop();
 
     return 0;
@@ -140,5 +142,14 @@ void keyboard( unsigned char key, int x, int y )
         default:
             glutPostRedisplay();
             break;
+    }
+}
+
+void resolve()
+{
+    cout << "Resolve" << endl;
+    while(player1Projectiles.size() > 0 && player1Projectiles.size() > 0)
+    {
+        glutPostRedisplay();
     }
 }

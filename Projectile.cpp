@@ -32,5 +32,5 @@ void Projectile::DrawProjectile()
 
     glFlush();
 
-    _time += 1;
+    _time += .1;
 }
