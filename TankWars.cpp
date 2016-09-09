@@ -1,11 +1,19 @@
 #include <iostream>
 #include <GL/freeglut.h>
 #include "Terrain.h"
+#include "Tank.h"
 
 using namespace std;
 
+const float Red[] = { 1.0, 0.0, 0.0 };
+const float Blue[] = { 0.0, 0.0, 1.0 };
+Terrain myTerrain;
+Tank player1(myTerrain.points[10].x - 6, myTerrain.points[10].y - 8, Red, 110);
+Tank player2(myTerrain.points[myTerrain.points.size() - 10].x - 6, myTerrain.points[myTerrain.points.size() - 10].y - 8, Blue, 70);
+
 void init( void );
 void display( void );
+void special( int key, int x, int y);
 
 int main( int argc, char *argv[] )
 {
@@ -16,12 +24,9 @@ int main( int argc, char *argv[] )
     glutInitWindowSize(800, 600);
     glutCreateWindow("Tank Wars");
 
-    Terrain myTerrain;
-
-    myTerrain.DisplaceTerrain(4, 50);
-
     init();
-    glutDisplayFunc( myTerrain.DrawTerrain );
+    glutDisplayFunc( display );
+    glutSpecialFunc( special );
     glutMainLoop();
 
     return 0;
@@ -41,15 +46,29 @@ void display( void )
 
     glEnable(GL_MULTISAMPLE);
 
-    glColor3f(0.0, 0.4, 0.2);
+    myTerrain.DrawTerrain();
 
-    glBegin( GL_LINE_STRIP );
-        glVertex2f( 0, 400 );
-        glVertex2f( 250,  400 );
-        glVertex2f( 400, 150 );
-        glVertex2f(  550,  400 );
-        glVertex2f(  800, 400 );
-    glEnd();
+    player1.DrawTank();
+    player2.DrawTank();
 
     glFlush();
+}
+
+void special( int key, int x, int y )
+{
+    // process keypresses
+    switch ( key )
+    {
+        case GLUT_KEY_LEFT:
+            player1.MoveLeft();
+            break;
+        case GLUT_KEY_RIGHT:
+            player1.MoveRight();
+            break;
+        case GLUT_KEY_UP:
+            break;
+        case GLUT_KEY_DOWN:
+            break;
+    }
+    glutPostRedisplay();
 }

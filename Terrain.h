@@ -7,6 +7,13 @@ using namespace std;
 class Terrain
 {
     public:
-        static void DrawTerrain();
+        struct point
+        {
+            GLint x;
+            GLint y;
+        };
+        vector<point> points;
+        Terrain();
+        void DrawTerrain();
         void DisplaceTerrain(int iterations, int roughness);
 };

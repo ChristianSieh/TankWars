@@ -1,12 +1,11 @@
 #include "Terrain.h"
 
-struct point
+Terrain::Terrain()
 {
-    GLint x;
-    GLint y;
-};
+    points = { {0, 400}, {100, 400}, {250, 400}, {400, 200}, {550, 400}, {700, 400}, {800, 400} };
 
-vector<point> points = { {0, 400}, {250, 400}, {400, 150}, {550, 400}, {800, 400} };
+    DisplaceTerrain(4, 50);
+}
 
 void Terrain::DrawTerrain()
 {
@@ -35,7 +34,6 @@ void Terrain::DisplaceTerrain(int iterations, int roughness)
         for(int j = 0; j < points.size() - 1; j+=2)
         {
             int r = rand() % (2 * roughness + 1) - roughness;
-            cout << "Displacement: " << r << endl;
             point midDisplace;
             midDisplace.x =  (points[j].x + points[j + 1].x) * 0.5;
             midDisplace.y = (0.5 * (points[j].y + points[j + 1].y)) + r;

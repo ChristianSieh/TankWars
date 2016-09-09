@@ -36,7 +36,7 @@ GL_LIBS = -lglut -lGLU -lGL -lm
 all:    TankWars
 
 # specific targets
-TankWars:	TankWars.o Terrain.o
+TankWars:	TankWars.o Terrain.o Tank.o
 	$(LINK) -o $@ $^ $(GL_LIBS)
 
 # generic C and C++ targets for OpenGL programs consisting of only one file
