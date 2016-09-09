@@ -14,6 +14,8 @@ Tank player1(myTerrain.points[10].x - 6, myTerrain.points[10].y - 8, Red, 300);
 Tank player2(myTerrain.points[myTerrain.points.size() - 10].x - 6, myTerrain.points[myTerrain.points.size() - 10].y - 8, Blue, 70);
 vector<Projectile> player1Projectiles;
 vector<Projectile> player2Projectiles;
+int ScreenWidth = 800;
+int ScreenHeight = 600;
 
 void init( void );
 void display( void );
@@ -26,7 +28,7 @@ int main( int argc, char *argv[] )
     glutSetOption(GLUT_MULTISAMPLE, 8);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_MULTISAMPLE);
     glutInitWindowPosition(50, 100);
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(ScreenWidth, ScreenHeight);
     glutCreateWindow("Tank Wars");
 
     init();
@@ -57,12 +59,10 @@ void display( void )
     player1.DrawTank();
     player2.DrawTank();
 
-    cout << "Player1Projectiles: " << player1Projectiles.size() << endl;
-
     for(int i = 0; i < player1Projectiles.size(); i++)
     {
-        if(player1Projectiles[i]._xPosition > glutGet(GLUT_WINDOW_WIDTH) || player1Projectiles[i]._xPosition < 0 || 
-            player1Projectiles[i]._yPosition > glutGET(GLUT_WINDOW_HEIGHT) || player1Projectiles[i]._yPosition < 0)
+        if(player1Projectiles[i]._xPosition > ScreenWidth || player1Projectiles[i]._xPosition < 0 || 
+            player1Projectiles[i]._yPosition > ScreenHeight || player1Projectiles[i]._yPosition < 0)
         {
             player1Projectiles.erase(player1Projectiles.begin() + i);
         }
@@ -72,9 +72,17 @@ void display( void )
         }
     }
 
-    for(int i = 0; i < player1Projectiles.size(); i++)
+    for(int i = 0; i < player2Projectiles.size(); i++)
     {
-        player1Projectiles[i].DrawProjectile();
+        if(player2Projectiles[i]._xPosition > ScreenWidth || player2Projectiles[i]._xPosition < 0 || 
+            player2Projectiles[i]._yPosition > ScreenHeight || player2Projectiles[i]._yPosition < 0)
+        {
+            player1Projectiles.erase(player1Projectiles.begin() + i);
+        }
+        else
+        {
+            player2Projectiles[i].DrawProjectile();
+        }
     }
 
     glFlush();
@@ -113,7 +121,8 @@ void keyboard( unsigned char key, int x, int y )
         
         case 32:
         {
-            Projectile proj(0, 400, 50, 300);
+            cout << "HERE" << endl;
+            Projectile proj(200, 400, 50, 300);
             player1Projectiles.push_back(proj);
             glutPostRedisplay();
             break;

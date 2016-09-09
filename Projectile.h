@@ -12,11 +12,13 @@ class Projectile
     private:
         int _velocity;
         int _angle;
-        int _time;
+        float _time;
 
     public:
         int _xPosition;
         int _yPosition;
+        int _xOriginalPosition;
+        int _yOriginalPosition;
         Projectile(int x, int y, int velocity, int angle);
         void DrawProjectile();
 };
