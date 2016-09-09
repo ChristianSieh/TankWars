@@ -1,5 +1,7 @@
 #include <GL/freeglut.h>
 #include <iostream>
+#include "Terrain.h"
+#include "Point.h"
 
 using namespace std;
 
@@ -15,6 +17,6 @@ class Tank
     public:
         Tank(int xPosition, int yPosition, const float* color, int angle);
         void DrawTank();
-        void MoveLeft();
-        void MoveRight();
+        void MoveLeft(vector<Point> points);
+        void MoveRight(vector<Point> points);
 };

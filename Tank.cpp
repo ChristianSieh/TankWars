@@ -17,12 +17,52 @@ void Tank::DrawTank()
     glFlush();
 }
 
-void Tank::MoveLeft()
+void Tank::MoveLeft(vector<Point> points)
 {
-    _xPosition -= 5;
+    int tempX = _xPosition - 5;
+
+    int i = 0;
+    
+    //cout << "_xPosition: " << _xPosition << " Points[i].x: " << points[i].x << endl;
+
+    while(points[i].x < tempX)
+    {
+        i++;
+    }
+
+    float slope = -((points[i - 1].y - points[i].y) / (points[i - 1].x - points[i].x));
+
+    float b = points[i].y - (slope * points[i].x);
+
+    //cout << "points[i-1].x: " << points[i - 1].x << " points[i].x: " << points[i].x << endl;
+    //cout << "points[i-1].y: " << points[i - 1].y << " points[i].y: " << points[i].y << endl;
+    //cout << "xPosition: " << _xPosition << " slope: " << slope << " b: " << b <<endl;
+    _xPosition = tempX;
+    _yPosition = (slope * _xPosition) + b;
+    //cout << "yPosition: " << _yPosition << endl;
 }
 
-void Tank::MoveRight()
+void Tank::MoveRight(vector<Point> points)
 {
-    _xPosition += 5;
+    int tempX = _xPosition + 5;
+
+    int i = 0;
+    
+    //cout << "_xPosition: " << _xPosition << " Points[i].x: " << points[i].x << endl;
+
+    while(points[i].x < tempX)
+    {
+        i++;
+    }
+
+    float slope = -((points[i - 1].y - points[i].y) / (points[i - 1].x - points[i].x));
+
+    float b = points[i].y - (slope * points[i].x);
+
+    //cout << "points[i-1].x: " << points[i - 1].x << " points[i].x: " << points[i].x << endl;
+    //cout << "points[i-1].y: " << points[i - 1].y << " points[i].y: " << points[i].y << endl;
+    //cout << "xPosition: " << _xPosition << " slope: " << slope << " b: " << b <<endl;
+    _xPosition = tempX;
+    _yPosition = (slope * _xPosition) + b;
+    //cout << "yPosition: " << _yPosition << endl;
 }

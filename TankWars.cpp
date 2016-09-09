@@ -60,10 +60,10 @@ void special( int key, int x, int y )
     switch ( key )
     {
         case GLUT_KEY_LEFT:
-            player1.MoveLeft();
+            player1.MoveLeft(myTerrain.points);
             break;
         case GLUT_KEY_RIGHT:
-            player1.MoveRight();
+            player1.MoveRight(myTerrain.points);
             break;
         case GLUT_KEY_UP:
             break;
