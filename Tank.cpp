@@ -2,7 +2,6 @@
 
 Tank::Tank(int xPosition, int yPosition, const float* color, int angle)
 {
-    cout << "Tank yPosition" << yPosition << endl;
     _xPosition = xPosition;
     _yPosition = yPosition;
     _color = color;

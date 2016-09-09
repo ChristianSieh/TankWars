@@ -11,17 +11,17 @@ const float Red[] = { 1.0, 0.0, 0.0 };
 const float Blue[] = { 0.0, 0.0, 1.0 };
 Terrain myTerrain;
 Tank player1(myTerrain.points[10].x - 6, myTerrain.points[10].y - 8, Red, 300);
-Tank player2(myTerrain.points[myTerrain.points.size() - 10].x - 6, myTerrain.points[myTerrain.points.size() - 10].y - 8, Blue, 70);
+Tank player2(myTerrain.points[myTerrain.points.size() - 10].x - 6, myTerrain.points[myTerrain.points.size() - 10].y - 8, Blue, 240);
 vector<Projectile> player1Projectiles;
 vector<Projectile> player2Projectiles;
 int ScreenWidth = 800;
 int ScreenHeight = 600;
+int PlayerTurn = 1;
 
 void init( void );
 void display( void );
 void special( int key, int x, int y);
 void keyboard( unsigned char key, int x, int y );
-void resolve();
 
 int main( int argc, char *argv[] )
 {
@@ -61,8 +61,10 @@ void display( void )
     player1.DrawTank();
     player2.DrawTank();
 
+    //Redraw all projectiles, this is here in case I add something that allows more then 1
     for(int i = 0; i < player1Projectiles.size(); i++)
     {
+        //If the projectile goes out of bounds delete it
         if(player1Projectiles[i]._xPosition > ScreenWidth || player1Projectiles[i]._xPosition < 0 || 
             player1Projectiles[i]._yPosition > ScreenHeight || player1Projectiles[i]._yPosition < 0)
         {
@@ -74,12 +76,14 @@ void display( void )
         }
     }
 
+    //Redraw all projectiles, this is here in case I add something that allows more then 1
     for(int i = 0; i < player2Projectiles.size(); i++)
     {
+        //If the projectile goes out of bounds delete it
         if(player2Projectiles[i]._xPosition > ScreenWidth || player2Projectiles[i]._xPosition < 0 || 
             player2Projectiles[i]._yPosition > ScreenHeight || player2Projectiles[i]._yPosition < 0)
         {
-            player1Projectiles.erase(player1Projectiles.begin() + i);
+            player2Projectiles.erase(player2Projectiles.begin() + i);
         }
         else
         {
@@ -97,16 +101,28 @@ void special( int key, int x, int y )
     switch ( key )
     {
         case GLUT_KEY_LEFT:
-            player1.MoveLeft(myTerrain.points);
+            if(PlayerTurn == 1)
+                player1.MoveLeft(myTerrain.points);
+            else
+                player2.MoveLeft(myTerrain.points);
             break;
         case GLUT_KEY_RIGHT:
-            player1.MoveRight(myTerrain.points);
+            if(PlayerTurn == 1)
+                player1.MoveRight(myTerrain.points);
+            else
+                player2.MoveRight(myTerrain.points);
             break;
         case GLUT_KEY_UP:
-            player1.ChangeAngle(1);
+            if(PlayerTurn == 1)
+                player1.ChangeAngle(1);
+            else
+                player2.ChangeAngle(1);
             break;
         case GLUT_KEY_DOWN:
-            player1.ChangeAngle(-1);
+            if(PlayerTurn == 1)
+                player1.ChangeAngle(-1);
+            else
+                player2.ChangeAngle(-1);
             break;
     }
     glutPostRedisplay();
@@ -124,32 +140,39 @@ void keyboard( unsigned char key, int x, int y )
         
         case 32:
         {
-            cout << player1._xPosition << " " << player1._yPosition << " " << player1._velocity << " " << player1._angle << endl;
-            Projectile proj(player1._xPosition, player1._yPosition, player1._velocity, player1._angle);
-            player1Projectiles.push_back(proj);
+            //cout << player1._xPosition << " " << player1._yPosition << " " << player1._velocity << " " << player1._angle << endl;
+            if(PlayerTurn == 1)
+            {            
+                Projectile proj(player1._xPosition, player1._yPosition, player1._velocity, player1._angle);
+                player1Projectiles.push_back(proj);
+                PlayerTurn = 2;
+            }
+            else
+            {
+                Projectile proj(player2._xPosition, player2._yPosition, player2._velocity, player2._angle);
+                player2Projectiles.push_back(proj);
+                PlayerTurn = 1;
+            }
             glutPostRedisplay();
             break;
         }
         case 43:
-            player1.ChangeVelocity(1);
+            if(PlayerTurn == 1)
+                player1.ChangeVelocity(1);
+            else
+                player2.ChangeVelocity(1);
             break;
 
         case 45:
-            player1.ChangeVelocity(-1);
+            if(PlayerTurn == 1)
+                player1.ChangeVelocity(-1);
+            else
+                player2.ChangeVelocity(-1);
             break;
 
         // anything else redraws window
         default:
             glutPostRedisplay();
             break;
-    }
-}
-
-void resolve()
-{
-    cout << "Resolve" << endl;
-    while(player1Projectiles.size() > 0 && player1Projectiles.size() > 0)
-    {
-        glutPostRedisplay();
     }
 }
