@@ -2,11 +2,12 @@
 
 Tank::Tank(int xPosition, int yPosition, const float* color, int angle)
 {
+    cout << "Tank yPosition" << yPosition << endl;
     _xPosition = xPosition;
     _yPosition = yPosition;
     _color = color;
     _angle = angle;
-    _velocity = 100;
+    _velocity = 50;
 }
 
 void Tank::DrawTank()

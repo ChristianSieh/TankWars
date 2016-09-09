@@ -26,7 +26,7 @@ int main( int argc, char *argv[] )
 {
     glutInit(&argc, argv);
     glutSetOption(GLUT_MULTISAMPLE, 8);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_MULTISAMPLE);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_MULTISAMPLE);
     glutInitWindowPosition(50, 100);
     glutInitWindowSize(ScreenWidth, ScreenHeight);
     glutCreateWindow("Tank Wars");
@@ -85,6 +85,7 @@ void display( void )
         }
     }
 
+    glutSwapBuffers();
     glFlush();
 }
 
@@ -121,8 +122,8 @@ void keyboard( unsigned char key, int x, int y )
         
         case 32:
         {
-            cout << "HERE" << endl;
-            Projectile proj(200, 400, 50, 300);
+            cout << player1._xPosition << " " << player1._yPosition << " " << player1._velocity << " " << player1._angle << endl;
+            Projectile proj(player1._xPosition, player1._yPosition, player1._velocity, player1._angle);
             player1Projectiles.push_back(proj);
             glutPostRedisplay();
             break;

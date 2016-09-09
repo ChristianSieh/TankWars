@@ -12,13 +12,13 @@ using namespace std;
 class Tank
 {
     private:
+        const float* _color;
+        int _health;
+    public:
         int _xPosition;
         int _yPosition;
         int _velocity;
         int _angle;
-        const float* _color;
-        int _health;
-    public:
         Tank(int xPosition, int yPosition, const float* color, int angle);
         void DrawTank();
         void MoveLeft(vector<Point> points);
