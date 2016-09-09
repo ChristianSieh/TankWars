@@ -1,7 +1,12 @@
+#ifndef TANK_H
+#define TANK_H
+
 #include <GL/freeglut.h>
 #include <iostream>
+#include <math.h>
 #include "Terrain.h"
 #include "Point.h"
+#include "Projectile.h"
 
 using namespace std;
 
@@ -14,9 +19,15 @@ class Tank
         int _angle;
         const float* _color;
         int _health;
+        Projectile _projectile;
     public:
         Tank(int xPosition, int yPosition, const float* color, int angle);
         void DrawTank();
         void MoveLeft(vector<Point> points);
         void MoveRight(vector<Point> points);
+        void Fire();
+        void ChangeAngle(int angle);
+        void ChangeVelocity(int velocity);
 };
+
+#endif

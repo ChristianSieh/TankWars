@@ -5,15 +5,17 @@
 
 using namespace std;
 
+const int EscapeKey = 27;
 const float Red[] = { 1.0, 0.0, 0.0 };
 const float Blue[] = { 0.0, 0.0, 1.0 };
 Terrain myTerrain;
-Tank player1(myTerrain.points[10].x - 6, myTerrain.points[10].y - 8, Red, 110);
+Tank player1(myTerrain.points[10].x - 6, myTerrain.points[10].y - 8, Red, 300);
 Tank player2(myTerrain.points[myTerrain.points.size() - 10].x - 6, myTerrain.points[myTerrain.points.size() - 10].y - 8, Blue, 70);
 
 void init( void );
 void display( void );
 void special( int key, int x, int y);
+void keyboard( unsigned char key, int x, int y );
 
 int main( int argc, char *argv[] )
 {
@@ -27,6 +29,7 @@ int main( int argc, char *argv[] )
     init();
     glutDisplayFunc( display );
     glutSpecialFunc( special );
+    glutKeyboardFunc( keyboard ); 
     glutMainLoop();
 
     return 0;
@@ -66,9 +69,40 @@ void special( int key, int x, int y )
             player1.MoveRight(myTerrain.points);
             break;
         case GLUT_KEY_UP:
+            player1.ChangeAngle(1);
             break;
         case GLUT_KEY_DOWN:
+            player1.ChangeAngle(-1);
             break;
     }
     glutPostRedisplay();
+}
+
+void keyboard( unsigned char key, int x, int y )
+{
+    // process keypresses
+    switch ( key )
+    {
+        // Escape quits program
+        case EscapeKey:
+            exit( 0 );
+            break;
+        
+        case 32:
+            player1.Fire();
+            break;
+
+        case 43:
+            player1.ChangeVelocity(1);
+            break;
+
+        case 45:
+            player1.ChangeVelocity(-1);
+            break;
+
+        // anything else redraws window
+        default:
+            glutPostRedisplay();
+            break;
+    }
 }

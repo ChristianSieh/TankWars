@@ -6,6 +6,7 @@ Tank::Tank(int xPosition, int yPosition, const float* color, int angle)
     _yPosition = yPosition;
     _color = color;
     _angle = angle;
+    _velocity = 100;
 }
 
 void Tank::DrawTank()
@@ -65,4 +66,25 @@ void Tank::MoveRight(vector<Point> points)
     _xPosition = tempX;
     _yPosition = (slope * _xPosition) + b;
     //cout << "yPosition: " << _yPosition << endl;
+}
+
+void Tank::Fire()
+{
+    for(int time = 0; time < 100; time++)
+    {
+        float x = _velocity * time * cos(_angle * M_PI / 180.0) + _xPosition;
+        float y = _velocity * time * sin(_angle * M_PI / 180.0) - ((-9.81 * time * time) / 2) + _yPosition;
+        _projectile.DrawProjectile(x, y);
+    }
+}
+
+void Tank::ChangeAngle(int angle)
+{
+    _angle += angle;
+    _angle = _angle % 360;
+}
+
+void Tank::ChangeVelocity(int velocity)
+{
+    _velocity += velocity;
 }
