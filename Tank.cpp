@@ -68,7 +68,7 @@ void Tank::MoveRight(vector<Point> points)
     //cout << "yPosition: " << _yPosition << endl;
 }
 
-void Tank::Fire()
+/*void Tank::Fire()
 {
     for(int time = 0; time < 100; time++)
     {
@@ -76,7 +76,7 @@ void Tank::Fire()
         float y = _velocity * time * sin(_angle * M_PI / 180.0) - ((-9.81 * time * time) / 2) + _yPosition;
         _projectile.DrawProjectile(x, y);
     }
-}
+}*/
 
 void Tank::ChangeAngle(int angle)
 {

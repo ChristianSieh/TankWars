@@ -1,7 +1,22 @@
 #include "Projectile.h"
 
-void Projectile::DrawProjectile(float centerX, float centerY)
+Projectile::Projectile(int x, int y, int velocity, int angle)
 {
+    _xPosition = x;
+    _yPosition = y;
+    _velocity = velocity;
+    _angle = angle;
+    _time = 0;
+}
+
+void Projectile::DrawProjectile()
+{
+    _xPosition = _velocity * _time * cos(_angle * M_PI / 180.0) + _xPosition;
+    _yPosition = _velocity * _time * sin(_angle * M_PI / 180.0) - ((-9.81 * _time * _time) / 2) + _yPosition;
+
+    cout << "X: " << _xPosition << endl;
+    cout << "Y: " << _yPosition << endl << endl;
+
     int numSegments = 100;
 
     glBegin(GL_LINE_LOOP);
@@ -12,9 +27,11 @@ void Projectile::DrawProjectile(float centerX, float centerY)
         float x = 5 * cosf(theta);
         float y = 5 * sinf(theta);
 
-        glVertex2f(x + centerX, y + centerY);
+        glVertex2f(x + _xPosition, y + _yPosition);
     }
     glEnd();
 
     glFlush();
+
+    _time += 1;
 }

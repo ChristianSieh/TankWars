@@ -2,6 +2,7 @@
 #include <GL/freeglut.h>
 #include "Terrain.h"
 #include "Tank.h"
+#include "Projectile.h"
 
 using namespace std;
 
@@ -11,6 +12,8 @@ const float Blue[] = { 0.0, 0.0, 1.0 };
 Terrain myTerrain;
 Tank player1(myTerrain.points[10].x - 6, myTerrain.points[10].y - 8, Red, 300);
 Tank player2(myTerrain.points[myTerrain.points.size() - 10].x - 6, myTerrain.points[myTerrain.points.size() - 10].y - 8, Blue, 70);
+vector<Projectile> player1Projectiles;
+vector<Projectile> player2Projectiles;
 
 void init( void );
 void display( void );
@@ -54,6 +57,26 @@ void display( void )
     player1.DrawTank();
     player2.DrawTank();
 
+    cout << "Player1Projectiles: " << player1Projectiles.size() << endl;
+
+    for(int i = 0; i < player1Projectiles.size(); i++)
+    {
+        if(player1Projectiles[i]._xPosition > glutGet(GLUT_WINDOW_WIDTH) || player1Projectiles[i]._xPosition < 0 || 
+            player1Projectiles[i]._yPosition > glutGET(GLUT_WINDOW_HEIGHT) || player1Projectiles[i]._yPosition < 0)
+        {
+            player1Projectiles.erase(player1Projectiles.begin() + i);
+        }
+        else
+        {
+            player1Projectiles[i].DrawProjectile();
+        }
+    }
+
+    for(int i = 0; i < player1Projectiles.size(); i++)
+    {
+        player1Projectiles[i].DrawProjectile();
+    }
+
     glFlush();
 }
 
@@ -89,9 +112,12 @@ void keyboard( unsigned char key, int x, int y )
             break;
         
         case 32:
-            player1.Fire();
+        {
+            Projectile proj(0, 400, 50, 300);
+            player1Projectiles.push_back(proj);
+            glutPostRedisplay();
             break;
-
+        }
         case 43:
             player1.ChangeVelocity(1);
             break;

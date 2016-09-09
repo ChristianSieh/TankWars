@@ -6,7 +6,6 @@
 #include <math.h>
 #include "Terrain.h"
 #include "Point.h"
-#include "Projectile.h"
 
 using namespace std;
 
@@ -19,7 +18,6 @@ class Tank
         int _angle;
         const float* _color;
         int _health;
-        Projectile _projectile;
     public:
         Tank(int xPosition, int yPosition, const float* color, int angle);
         void DrawTank();
