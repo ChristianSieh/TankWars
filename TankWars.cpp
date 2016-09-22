@@ -3,12 +3,14 @@
 #include "Terrain.h"
 #include "Tank.h"
 #include "Projectile.h"
+#include "Explosion.h"
 
 using namespace std;
 
 const int EscapeKey = 27;
 const float Red[] = { 1.0, 0.0, 0.0 };
 const float Blue[] = { 0.0, 0.0, 1.0 };
+const float Orange[] = { 1.0, 0.647, 0.0 };
 Terrain myTerrain;
 Tank player1(myTerrain.points[10].x - 6, myTerrain.points[10].y - 8, Red, 300);
 Tank player2(myTerrain.points[myTerrain.points.size() - 10].x - 6, myTerrain.points[myTerrain.points.size() - 10].y - 8, Blue, 240);
@@ -61,33 +63,44 @@ void display( void )
     player1.DrawTank();
     player2.DrawTank();
 
-    //Redraw all projectiles, this is here in case I add something that allows more then 1
+    //Redraw all projectiles for player1, this is here in case I add something that allows more then 1
     for(int i = 0; i < player1Projectiles.size(); i++)
     {
         //If the projectile goes out of bounds delete it
         if(player1Projectiles[i]._xPosition > ScreenWidth || player1Projectiles[i]._xPosition < 0 || 
-            player1Projectiles[i]._yPosition > ScreenHeight || player1Projectiles[i]._yPosition < 0)
+            player1Projectiles[i]._yPosition > ScreenHeight)
         {
             player1Projectiles.erase(player1Projectiles.begin() + i);
         }
         else
         {
             player1Projectiles[i].DrawProjectile();
+            if(player1Projectiles[i].TankCollision(player2) || player1Projectiles[i].TerrainCollision(myTerrain))
+            {
+                Explosion exp(player1Projectiles[i]._xPosition, player1Projectiles[i]._yPosition, Orange);
+                player1Projectiles.erase(player1Projectiles.begin() + i);
+                
+            }
         }
     }
 
-    //Redraw all projectiles, this is here in case I add something that allows more then 1
+    //Redraw all projectiles for player 2, this is here in case I add something that allows more then 1
     for(int i = 0; i < player2Projectiles.size(); i++)
     {
         //If the projectile goes out of bounds delete it
         if(player2Projectiles[i]._xPosition > ScreenWidth || player2Projectiles[i]._xPosition < 0 || 
-            player2Projectiles[i]._yPosition > ScreenHeight || player2Projectiles[i]._yPosition < 0)
+            player2Projectiles[i]._yPosition > ScreenHeight)
         {
             player2Projectiles.erase(player2Projectiles.begin() + i);
         }
         else
         {
             player2Projectiles[i].DrawProjectile();
+            if(player2Projectiles[i].TankCollision(player1) || player2Projectiles[i].TerrainCollision(myTerrain))
+            {
+                Explosion exp(player2Projectiles[i]._xPosition, player2Projectiles[i]._yPosition, Orange);
+                player2Projectiles.erase(player2Projectiles.begin() + i);
+            }
         }
     }
 

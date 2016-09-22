@@ -4,6 +4,8 @@
 #include <GL/freeglut.h>
 #include <iostream>
 #include <math.h>
+#include "Tank.h"
+#include "Terrain.h"
 
 using namespace std;
 
@@ -13,6 +15,7 @@ class Projectile
         int _velocity;
         int _angle;
         float _time;
+        int _radius;
 
     public:
         int _xPosition;
@@ -21,6 +24,8 @@ class Projectile
         int _yOriginalPosition;
         Projectile(int x, int y, int velocity, int angle);
         void DrawProjectile();
+        bool TankCollision(Tank player);
+        bool TerrainCollision(Terrain myTerrain);
 };
 
 #endif
