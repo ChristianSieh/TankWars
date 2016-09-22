@@ -13,6 +13,8 @@ void Explosion::DrawExplosion()
 {
     int numSegments = 100;
 
+    glColor3fv( _color );
+
     glBegin(GL_LINE_LOOP);
     for(int i = 0; i < numSegments; i++)
     {

@@ -1,6 +1,6 @@
 #include "Projectile.h"
 
-Projectile::Projectile(int x, int y, int velocity, int angle)
+Projectile::Projectile(int x, int y, int velocity, int angle, const float* color)
 {
     _xPosition = x;
     _yPosition = y;
@@ -10,6 +10,7 @@ Projectile::Projectile(int x, int y, int velocity, int angle)
     _angle = angle;
     _time = 0;
     _radius = 3;
+    _color = color;
 }
 
 void Projectile::DrawProjectile()
@@ -18,6 +19,8 @@ void Projectile::DrawProjectile()
     _yPosition = _velocity * _time * sin(_angle * M_PI / 180.0) - ((-9.81 * _time * _time) / 2) + _yOriginalPosition;
 
     int numSegments = 100;
+
+    glColor3fv( _color );
 
     glBegin(GL_LINE_LOOP);
     for(int i = 0; i < numSegments; i++)
@@ -40,12 +43,16 @@ bool Projectile::TankCollision(Tank player)
 {
     //Check that the y value of the projectile is the same as inside the rectangle
     if(((_yPosition + _radius) >= player._yPosition && (_yPosition + _radius) <= player._yPosition + 8)
-        || ((_yPosition - _radius) >= player._yPosition && (_yPosition - _radius) <= player._yPosition + 8)) 
+        || ((_yPosition - _radius) >= player._yPosition && (_yPosition - _radius) <= player._yPosition + 8) ) 
     {
+        //cout << "YPosition + radius: " << _yPosition + _radius << " YPosition - radius: " << _yPosition - _radius << endl;
+        //cout << "Tank YPosition: " << player._yPosition << " Tank YPosition + 8: " << player._yPosition + 8 << endl;
         //Check that they x value of the projectile is the same as inside the rectangle
         if(((_xPosition + _radius) >= player._xPosition && (_xPosition + _radius) <= player._xPosition + 12)
             || ((_xPosition - _radius) >= player._xPosition && (_xPosition - _radius) <= player._xPosition + 12))
         {
+            //cout << "XPosition + radius: " << _xPosition + _radius << " XPosition - radius: " << _xPosition - _radius << endl;
+            //cout << "Tank XPosition: " << player._xPosition << " Tank XPosition + 8: " << player._xPosition + 8 << endl;
             return true;
         }
     }

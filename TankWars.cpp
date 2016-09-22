@@ -1,5 +1,6 @@
 #include <iostream>
 #include <GL/freeglut.h>
+#include <random>
 #include "Terrain.h"
 #include "Tank.h"
 #include "Projectile.h"
@@ -11,11 +12,20 @@ const int EscapeKey = 27;
 const float Red[] = { 1.0, 0.0, 0.0 };
 const float Blue[] = { 0.0, 0.0, 1.0 };
 const float Orange[] = { 1.0, 0.647, 0.0 };
+const float Black[] = { 0.0, 0.0, 0.0 };
+
+//Using C++11 to get a random number since it's supposed to be better
+random_device rd;
+mt19937 mt(rd());
+uniform_real_distribution<double> dist(3.0, 15.0);
+
 Terrain myTerrain;
-Tank player1(myTerrain.points[10].x - 6, myTerrain.points[10].y - 8, Red, 300);
-Tank player2(myTerrain.points[myTerrain.points.size() - 10].x - 6, myTerrain.points[myTerrain.points.size() - 10].y - 8, Blue, 240);
+Tank player1(myTerrain.points[(int)dist(mt)].x - 6, myTerrain.points[(int)dist(mt)].y - 8, Red, 300);
+Tank player2(myTerrain.points[myTerrain.points.size() - (int)dist(mt)].x - 6, myTerrain.points[myTerrain.points.size() - (int)dist(mt)].y - 8, Blue, 240);
 vector<Projectile> player1Projectiles;
 vector<Projectile> player2Projectiles;
+vector<Explosion> explosions;
+
 int ScreenWidth = 800;
 int ScreenHeight = 600;
 int PlayerTurn = 1;
@@ -60,11 +70,18 @@ void display( void )
 
     myTerrain.DrawTerrain();
 
-    player1.DrawTank();
-    player2.DrawTank();
+    if(player1._health != 0)
+        player1.DrawTank();
+    if(player2._health != 0)
+        player2.DrawTank();
+
+    for(unsigned int i = 0; i < explosions.size(); i++)
+    {
+        explosions[i].DrawExplosion();
+    }
 
     //Redraw all projectiles for player1, this is here in case I add something that allows more then 1
-    for(int i = 0; i < player1Projectiles.size(); i++)
+    for(unsigned int i = 0; i < player1Projectiles.size(); i++)
     {
         //If the projectile goes out of bounds delete it
         if(player1Projectiles[i]._xPosition > ScreenWidth || player1Projectiles[i]._xPosition < 0 || 
@@ -75,17 +92,23 @@ void display( void )
         else
         {
             player1Projectiles[i].DrawProjectile();
-            if(player1Projectiles[i].TankCollision(player2) || player1Projectiles[i].TerrainCollision(myTerrain.points))
+            if(player1Projectiles[i].TankCollision(player2))
+            {
+                Explosion exp(player1Projectiles[i]._xPosition, player1Projectiles[i]._yPosition, Orange);
+                explosions.push_back(exp);
+                player1Projectiles.erase(player1Projectiles.begin() + i);
+                //player2._health = 0;
+            }
+            if(player1Projectiles[i].TerrainCollision(myTerrain.points))
             {
                 Explosion exp(player1Projectiles[i]._xPosition, player1Projectiles[i]._yPosition, Orange);
                 player1Projectiles.erase(player1Projectiles.begin() + i);
-                
             }
         }
     }
 
     //Redraw all projectiles for player 2, this is here in case I add something that allows more then 1
-    for(int i = 0; i < player2Projectiles.size(); i++)
+    for(unsigned int i = 0; i < player2Projectiles.size(); i++)
     {
         //If the projectile goes out of bounds delete it
         if(player2Projectiles[i]._xPosition > ScreenWidth || player2Projectiles[i]._xPosition < 0 || 
@@ -96,7 +119,14 @@ void display( void )
         else
         {
             player2Projectiles[i].DrawProjectile();
-            if(player2Projectiles[i].TankCollision(player1) || player2Projectiles[i].TerrainCollision(myTerrain.points))
+            if(player2Projectiles[i].TankCollision(player1))
+            {
+                Explosion exp(player2Projectiles[i]._xPosition, player2Projectiles[i]._yPosition, Orange);
+                explosions.push_back(exp);
+                player2Projectiles.erase(player2Projectiles.begin() + i);
+                //player1._health = 0;
+            }
+            if(player2Projectiles[i].TerrainCollision(myTerrain.points))
             {
                 Explosion exp(player2Projectiles[i]._xPosition, player2Projectiles[i]._yPosition, Orange);
                 player2Projectiles.erase(player2Projectiles.begin() + i);
@@ -113,24 +143,31 @@ void special( int key, int x, int y )
     // process keypresses
     switch ( key )
     {
+        // Move tank left
         case GLUT_KEY_LEFT:
             if(PlayerTurn == 1)
                 player1.MoveLeft(myTerrain.points);
             else
                 player2.MoveLeft(myTerrain.points);
             break;
+
+        // Move tank right
         case GLUT_KEY_RIGHT:
             if(PlayerTurn == 1)
                 player1.MoveRight(myTerrain.points);
             else
                 player2.MoveRight(myTerrain.points);
             break;
+
+        // Increase the angle
         case GLUT_KEY_UP:
             if(PlayerTurn == 1)
                 player1.ChangeAngle(1);
             else
                 player2.ChangeAngle(1);
             break;
+
+        // Decrease the angle
         case GLUT_KEY_DOWN:
             if(PlayerTurn == 1)
                 player1.ChangeAngle(-1);
@@ -151,24 +188,26 @@ void keyboard( unsigned char key, int x, int y )
             exit( 0 );
             break;
         
+        // Spacebar shoots depending on who's turn it is
         case 32:
         {
-            //cout << player1._xPosition << " " << player1._yPosition << " " << player1._velocity << " " << player1._angle << endl;
             if(PlayerTurn == 1)
             {            
-                Projectile proj(player1._xPosition, player1._yPosition, player1._velocity, player1._angle);
+                Projectile proj(player1._xPosition + 15, player1._yPosition - 3, player1._velocity, player1._angle, Black);
                 player1Projectiles.push_back(proj);
                 PlayerTurn = 2;
             }
             else
             {
-                Projectile proj(player2._xPosition, player2._yPosition, player2._velocity, player2._angle);
+                Projectile proj(player2._xPosition + 15, player2._yPosition - 3, player2._velocity, player2._angle, Black);
                 player2Projectiles.push_back(proj);
                 PlayerTurn = 1;
             }
             glutPostRedisplay();
             break;
         }
+
+        // + increases the velocity
         case 43:
             if(PlayerTurn == 1)
                 player1.ChangeVelocity(1);
@@ -176,6 +215,7 @@ void keyboard( unsigned char key, int x, int y )
                 player2.ChangeVelocity(1);
             break;
 
+        // - decreases the velocity
         case 45:
             if(PlayerTurn == 1)
                 player1.ChangeVelocity(-1);
@@ -183,7 +223,6 @@ void keyboard( unsigned char key, int x, int y )
                 player2.ChangeVelocity(-1);
             break;
 
-        // anything else redraws window
         default:
             glutPostRedisplay();
             break;

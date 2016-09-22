@@ -7,13 +7,17 @@ Tank::Tank(int xPosition, int yPosition, const float* color, int angle)
     _color = color;
     _angle = angle;
     _velocity = 50;
+    _health = 100;
 }
 
 void Tank::DrawTank()
 {
     glColor3fv( _color );
+    //Draw base
     glRectf( _xPosition, _yPosition, _xPosition + 12, _yPosition + 8 );
+    //Draw turret
     glRectf( _xPosition + 3, _yPosition, _xPosition + 9, _yPosition - 4);
+    //Draw barrel
     glRectf( _xPosition + 4, _yPosition - 1, _xPosition + 15, _yPosition - 3);
     glFlush();
 }
