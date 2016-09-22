@@ -25,7 +25,7 @@ class Projectile
         Projectile(int x, int y, int velocity, int angle);
         void DrawProjectile();
         bool TankCollision(Tank player);
-        bool TerrainCollision(Terrain myTerrain);
+        bool TerrainCollision(vector<Point> points);
 };
 
 #endif

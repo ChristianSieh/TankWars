@@ -75,7 +75,7 @@ void display( void )
         else
         {
             player1Projectiles[i].DrawProjectile();
-            if(player1Projectiles[i].TankCollision(player2) || player1Projectiles[i].TerrainCollision(myTerrain))
+            if(player1Projectiles[i].TankCollision(player2) || player1Projectiles[i].TerrainCollision(myTerrain.points))
             {
                 Explosion exp(player1Projectiles[i]._xPosition, player1Projectiles[i]._yPosition, Orange);
                 player1Projectiles.erase(player1Projectiles.begin() + i);
@@ -96,7 +96,7 @@ void display( void )
         else
         {
             player2Projectiles[i].DrawProjectile();
-            if(player2Projectiles[i].TankCollision(player1) || player2Projectiles[i].TerrainCollision(myTerrain))
+            if(player2Projectiles[i].TankCollision(player1) || player2Projectiles[i].TerrainCollision(myTerrain.points))
             {
                 Explosion exp(player2Projectiles[i]._xPosition, player2Projectiles[i]._yPosition, Orange);
                 player2Projectiles.erase(player2Projectiles.begin() + i);

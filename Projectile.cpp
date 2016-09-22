@@ -53,9 +53,21 @@ bool Projectile::TankCollision(Tank player)
     return false;
 }
 
-bool Projectile::TerrainCollision(Terrain myTerrain)
+bool Projectile::TerrainCollision(vector<Point> points)
 {
-    
+    int i = 0;
+
+    while(points[i].x < _xPosition)
+    {
+        i++;
+    }
+
+    float slope = -((points[i - 1].y - points[i].y) / (points[i - 1].x - points[i].x));
+
+    float b = points[i].y - (slope * points[i].x);
+
+    if(_yPosition >= (slope * _xPosition) + b)
+        return true;
 
     return false;
 }
