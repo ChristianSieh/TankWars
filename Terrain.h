@@ -15,6 +15,7 @@ class Terrain
         Terrain();
         void DrawTerrain();
         void DisplaceTerrain(int iterations, int roughness);
+        void Reset();
 };
 
 #endif

@@ -48,8 +48,8 @@ bool Projectile::TankCollision(Tank player)
         //cout << "YPosition + radius: " << _yPosition + _radius << " YPosition - radius: " << _yPosition - _radius << endl;
         //cout << "Tank YPosition: " << player._yPosition << " Tank YPosition + 8: " << player._yPosition + 8 << endl;
         //Check that they x value of the projectile is the same as inside the rectangle
-        if(((_xPosition + _radius) >= player._xPosition && (_xPosition + _radius) <= player._xPosition + 12)
-            || ((_xPosition - _radius) >= player._xPosition && (_xPosition - _radius) <= player._xPosition + 12))
+        if(((_xPosition + _radius) >= player._xPosition - 6 && (_xPosition + _radius) <= player._xPosition + 6)
+            || ((_xPosition - _radius) >= player._xPosition - 6 && (_xPosition - _radius) <= player._xPosition + 6))
         {
             //cout << "XPosition + radius: " << _xPosition + _radius << " XPosition - radius: " << _xPosition - _radius << endl;
             //cout << "Tank XPosition: " << player._xPosition << " Tank XPosition + 8: " << player._xPosition + 8 << endl;

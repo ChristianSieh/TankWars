@@ -16,7 +16,7 @@ void Terrain::DrawTerrain()
     glColor3f(0.0, 0.4, 0.2);
 
     glBegin( GL_LINE_STRIP );
-        for(int i = 0; i < points.size(); i++)
+        for(unsigned int i = 0; i < points.size(); i++)
         {
             glVertex2i(points[i].x, points[i].y);
         }
@@ -31,10 +31,10 @@ void Terrain::DisplaceTerrain(int iterations, int roughness)
 
     for(int i = 0; i < iterations; i++)
     {
-        for(int j = 0; j < points.size() - 1; j+=2)
+        for(unsigned int j = 0; j < points.size() - 1; j+=2)
         {
             int r = rand() % (2 * roughness + 1) - roughness;
-            point midDisplace;
+            Point midDisplace;
             midDisplace.x =  (points[j].x + points[j + 1].x) * 0.5;
             midDisplace.y = (0.5 * (points[j].y + points[j + 1].y)) + r;
 
@@ -43,4 +43,11 @@ void Terrain::DisplaceTerrain(int iterations, int roughness)
 
         roughness *= 0.5;
     }
+}
+
+void Terrain::Reset()
+{
+    points = { {0, 400}, {100, 400}, {250, 400}, {400, 200}, {550, 400}, {700, 400}, {800, 400} };
+
+    DisplaceTerrain(4, 50);
 }

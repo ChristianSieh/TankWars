@@ -13,22 +13,24 @@ const float Red[] = { 1.0, 0.0, 0.0 };
 const float Blue[] = { 0.0, 0.0, 1.0 };
 const float Orange[] = { 1.0, 0.647, 0.0 };
 const float Black[] = { 0.0, 0.0, 0.0 };
+float ScreenWidth = 800;
+float ScreenHeight = 600;
+int PlayerTurn = 1;
 
 //Using C++11 to get a random number since it's supposed to be better
 random_device rd;
 mt19937 mt(rd());
 uniform_real_distribution<double> dist(3.0, 15.0);
+int player1Point = (int)dist(mt);
+int player2Point = (int)dist(mt);
 
 Terrain myTerrain;
-Tank player1(myTerrain.points[(int)dist(mt)].x - 6, myTerrain.points[(int)dist(mt)].y - 8, Red, 300);
-Tank player2(myTerrain.points[myTerrain.points.size() - (int)dist(mt)].x - 6, myTerrain.points[myTerrain.points.size() - (int)dist(mt)].y - 8, Blue, 240);
+Tank player1(myTerrain.points[player1Point].x, myTerrain.points[player1Point].y, Red, 300);
+Tank player2(myTerrain.points[myTerrain.points.size() - player2Point].x, myTerrain.points[myTerrain.points.size() - player2Point].y, Blue, 240);
 vector<Projectile> player1Projectiles;
 vector<Projectile> player2Projectiles;
 vector<Explosion> explosions;
-
-int ScreenWidth = 800;
-int ScreenHeight = 600;
-int PlayerTurn = 1;
+void reset();
 
 void init( void );
 void display( void );
@@ -59,7 +61,7 @@ void init(void)
     glClearColor(1.0, 1.0, 1.0, 0.0);
 
     glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(0.0, 800.0, 600.0, 0.0);
+    gluOrtho2D(0.0, ScreenWidth, ScreenHeight, 0.0);
 }
 
 void display( void )
@@ -70,10 +72,8 @@ void display( void )
 
     myTerrain.DrawTerrain();
 
-    if(player1._health != 0)
-        player1.DrawTank();
-    if(player2._health != 0)
-        player2.DrawTank();
+    player1.DrawTank();
+    player2.DrawTank();
 
     for(unsigned int i = 0; i < explosions.size(); i++)
     {
@@ -97,7 +97,7 @@ void display( void )
                 Explosion exp(player1Projectiles[i]._xPosition, player1Projectiles[i]._yPosition, Orange);
                 explosions.push_back(exp);
                 player1Projectiles.erase(player1Projectiles.begin() + i);
-                //player2._health = 0;
+                reset();
             }
             if(player1Projectiles[i].TerrainCollision(myTerrain.points))
             {
@@ -124,7 +124,7 @@ void display( void )
                 Explosion exp(player2Projectiles[i]._xPosition, player2Projectiles[i]._yPosition, Orange);
                 explosions.push_back(exp);
                 player2Projectiles.erase(player2Projectiles.begin() + i);
-                //player1._health = 0;
+                reset();
             }
             if(player2Projectiles[i].TerrainCollision(myTerrain.points))
             {
@@ -140,6 +140,12 @@ void display( void )
 
 void special( int key, int x, int y )
 {
+    if(player1Projectiles.size() != 0 || player2Projectiles.size() != 0)
+    {
+        glutPostRedisplay();
+        return;
+    }
+
     // process keypresses
     switch ( key )
     {
@@ -180,6 +186,12 @@ void special( int key, int x, int y )
 
 void keyboard( unsigned char key, int x, int y )
 {
+    if(player1Projectiles.size() != 0 || player2Projectiles.size() != 0)
+    {
+        glutPostRedisplay();
+        return;
+    }
+
     // process keypresses
     switch ( key )
     {
@@ -193,13 +205,13 @@ void keyboard( unsigned char key, int x, int y )
         {
             if(PlayerTurn == 1)
             {            
-                Projectile proj(player1._xPosition + 15, player1._yPosition - 3, player1._velocity, player1._angle, Black);
+                Projectile proj(player1._xPosition + 9, player1._yPosition - 3, player1._velocity, player1._angle, Black);
                 player1Projectiles.push_back(proj);
                 PlayerTurn = 2;
             }
             else
             {
-                Projectile proj(player2._xPosition + 15, player2._yPosition - 3, player2._velocity, player2._angle, Black);
+                Projectile proj(player2._xPosition + 9, player2._yPosition - 3, player2._velocity, player2._angle, Black);
                 player2Projectiles.push_back(proj);
                 PlayerTurn = 1;
             }
@@ -227,4 +239,29 @@ void keyboard( unsigned char key, int x, int y )
             glutPostRedisplay();
             break;
     }
+}
+
+void reset()
+{
+    ScreenWidth = 800;
+    ScreenHeight = 600;
+    PlayerTurn = 1;
+
+    player1Projectiles.clear();
+    player2Projectiles.clear();
+
+    myTerrain.Reset();
+    
+    player1Point = (int)dist(mt);
+    player2Point = (int)dist(mt);
+
+    player1._xPosition = myTerrain.points[player1Point].x;
+    player1._yPosition = myTerrain.points[player1Point].y;
+    player1._angle = 300;
+    player1._velocity = 50;
+
+    player2._xPosition = myTerrain.points[myTerrain.points.size() - player2Point].x;
+    player2._yPosition = myTerrain.points[myTerrain.points.size() - player2Point].y;
+    player2._angle = 240;
+    player2._velocity = 50;
 }
