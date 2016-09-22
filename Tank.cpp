@@ -1,5 +1,12 @@
 #include "Tank.h"
 
+/*
+    Author: Christian Sieh
+
+    Description: Constructor for the tank to set up initial values.
+
+    TODO: Fix player starting position since it's a little wonky
+*/
 Tank::Tank(int xPosition, int yPosition, const float* color, int angle)
 {
     _xPosition = xPosition;
@@ -9,6 +16,11 @@ Tank::Tank(int xPosition, int yPosition, const float* color, int angle)
     _velocity = 50;
 }
 
+/*
+    Author: Christian Sieh
+
+    Description: This method draws the 3 pieces of our tank.
+*/
 void Tank::DrawTank()
 {
     glColor3fv( _color );
@@ -21,60 +33,83 @@ void Tank::DrawTank()
     glFlush();
 }
 
+/*
+    Author: Christian Sieh
+
+    Description: This method allows our tank to move left.
+*/
 void Tank::MoveLeft(vector<Point> points)
 {
     int tempX = _xPosition - 1;
 
     int i = 0;
 
+    // Get the point to the right of our tank
     while(points[i].x < tempX)
     {
         i++;
     }
 
+    // Use the point to the left and the point to the right of our tank to get the slope
     float slope = (float)(points[i - 1].y - points[i].y) / (float)(points[i - 1].x - points[i].x);
 
+    // Then get the intercept
     float b = points[i].y - (slope * points[i].x);
 
+    // Use the intercept to get our new y position
+    // The ( - 8) for y is to make the tank place it's point on the bottom instead
+    // of the top left corner
     _xPosition = tempX;
     _yPosition = ((slope * _xPosition) + b) - 8;
 }
 
+/*
+    Author: Christian Sieh
+
+    Description: This method allows our tank to move right.
+*/
 void Tank::MoveRight(vector<Point> points)
 {
     int tempX = _xPosition + 1;
 
     int i = 0;
 
+    // Get the point to the right of our tank
     while(points[i].x < tempX)
     {
         i++;
     }
 
+    // Use the point to the left and the point to the right of our tank to get the slope
     float slope = (float)(points[i - 1].y - points[i].y) / (float)(points[i - 1].x - points[i].x);
 
+    // Then get the intercept
     float b = points[i].y - (slope * points[i].x);
 
+    // Use the intercept to get our new y position
+    // The ( - 8) for y is to make the tank place it's point on the bottom instead
+    // of the top left corner
     _xPosition = tempX;
     _yPosition = ((slope * _xPosition) + b) - 8;
 }
 
-/*void Tank::Fire()
-{
-    for(int time = 0; time < 100; time++)
-    {
-        float x = _velocity * time * cos(_angle * M_PI / 180.0) + _xPosition;
-        float y = _velocity * time * sin(_angle * M_PI / 180.0) - ((-9.81 * time * time) / 2) + _yPosition;
-        _projectile.DrawProjectile(x, y);
-    }
-}*/
+/*
+    Author: Christian Sieh
 
+    Description: This method just updates the firing angle and makes
+                 sure it's between 0-360
+*/
 void Tank::ChangeAngle(int angle)
 {
     _angle += angle;
     _angle = _angle % 360;
 }
 
+/*
+    Author: Christian Sieh
+
+    Description: This method just updates the velocity for the tank.
+*/
 void Tank::ChangeVelocity(int velocity)
 {
     _velocity += velocity;

@@ -1,42 +1,95 @@
+/*
+    Author: Christian Sieh
+    Date: 9/22/2016
+    Title: TankWars
+    Class: Computer Graphics, CSC443, Fall 16
+    Professor: Dr. John Weiss
+    
+    Usage: 
+            ./TankWars
+
+    Controls:
+            Left Arrow: Move current tank left
+            Right Arrow: Move current tank right
+            Up Arrow: Increase the firing angle
+            Down Arrow: Decrese the firing angle
+            +: Increase the firing velocity
+            -: Decrease the firing velocity
+            Space: Fire projectile
+            Escape: Exit program
+
+    Description:
+        When the program first launches it uses the Terrain class, the points,
+        defined inside, and the midpoint displacement algorithm to make semi
+        realistic terrain. Then Player1 and Player2 are randomly placed on the
+        left and right sides of the mountains and the game begins.
+
+        The objective of the game is to hit the other players tank with a
+        projectile by using the controls listed above. You are only allowed
+        to fire and move on your turn and once a player is hit, the game
+        resets.
+
+    Note:
+        The projectile fires from the end of the player's barrel so make
+        sure your barrel is sticking inside the mountain.
+    
+    TODO:
+        Add barrel rotation since currently Player2 is at a disadvantage.
+
+    Extras Added:
+            - MSAA to clear up jagged edges
+            - Animated projectile
+*/
+
 #include <iostream>
 #include <GL/freeglut.h>
 #include <random>
 #include "Terrain.h"
 #include "Tank.h"
 #include "Projectile.h"
-#include "Explosion.h"
 
 using namespace std;
 
+// Consts
 const int EscapeKey = 27;
 const float Red[] = { 1.0, 0.0, 0.0 };
 const float Blue[] = { 0.0, 0.0, 1.0 };
 const float Orange[] = { 1.0, 0.647, 0.0 };
 const float Black[] = { 0.0, 0.0, 0.0 };
-float ScreenWidth = 800;
-float ScreenHeight = 600;
-int PlayerTurn = 1;
+const float White[] = { 1.0, 1.0, 1.0 };
 
-//Using C++11 to get a random number since it's supposed to be better
+// Using C++11 to get a random number since it's supposed to be better
 random_device rd;
 mt19937 mt(rd());
 uniform_real_distribution<double> dist(3.0, 15.0);
 int player1Point = (int)dist(mt);
 int player2Point = (int)dist(mt);
 
+// Globals
+float ScreenWidth = 800;
+float ScreenHeight = 600;
+int PlayerTurn = 1;
 Terrain myTerrain;
 Tank player1(myTerrain.points[player1Point].x, myTerrain.points[player1Point].y, Red, 300);
 Tank player2(myTerrain.points[myTerrain.points.size() - player2Point].x, myTerrain.points[myTerrain.points.size() - player2Point].y, Blue, 240);
 vector<Projectile> player1Projectiles;
 vector<Projectile> player2Projectiles;
-vector<Explosion> explosions;
-void reset();
 
+// Prototypes
+void reset();
 void init( void );
 void display( void );
 void special( int key, int x, int y);
 void keyboard( unsigned char key, int x, int y );
+void DrawText();
+/*
+    Author: Christian Sieh
+    Original Author: Dr. John Weiss, SDSMT
 
+    Description: The main functions sets up all of our default values as well as
+                 glut functions. It then calls glutMainLoop() and stays in there
+                 until the program stops running.
+*/
 int main( int argc, char *argv[] )
 {
     glutInit(&argc, argv);
@@ -56,6 +109,12 @@ int main( int argc, char *argv[] )
     return 0;
 }
 
+/*
+    Author: Christian Sieh
+    Original Author: Dr. John Weiss, SDSMT
+
+    Description: This function is just to initialize some values.
+*/
 void init(void)
 {
     glClearColor(1.0, 1.0, 1.0, 0.0);
@@ -64,6 +123,15 @@ void init(void)
     gluOrtho2D(0.0, ScreenWidth, ScreenHeight, 0.0);
 }
 
+/*
+    Author: Christian Sieh
+    Original Author: Dr. John Weiss, SDSMT
+
+    Description: This function runs all of the draw functions as well as deleting projectiles
+                 when they are no longer needed.
+
+    TODO: Pull the projectile part out into a function
+*/
 void display( void )
 {
     glClear( GL_COLOR_BUFFER_BIT );
@@ -75,10 +143,7 @@ void display( void )
     player1.DrawTank();
     player2.DrawTank();
 
-    for(unsigned int i = 0; i < explosions.size(); i++)
-    {
-        explosions[i].DrawExplosion();
-    }
+    DrawText();
 
     //Redraw all projectiles for player1, this is here in case I add something that allows more then 1
     for(unsigned int i = 0; i < player1Projectiles.size(); i++)
@@ -92,16 +157,15 @@ void display( void )
         else
         {
             player1Projectiles[i].DrawProjectile();
+            // Check for projectile collision with player2's tank
             if(player1Projectiles[i].TankCollision(player2))
             {
-                Explosion exp(player1Projectiles[i]._xPosition, player1Projectiles[i]._yPosition, Orange);
-                explosions.push_back(exp);
                 player1Projectiles.erase(player1Projectiles.begin() + i);
                 reset();
             }
+            // Check for collision with the ground
             if(player1Projectiles[i].TerrainCollision(myTerrain.points))
             {
-                Explosion exp(player1Projectiles[i]._xPosition, player1Projectiles[i]._yPosition, Orange);
                 player1Projectiles.erase(player1Projectiles.begin() + i);
             }
         }
@@ -119,16 +183,16 @@ void display( void )
         else
         {
             player2Projectiles[i].DrawProjectile();
+            
+            // Check for projectile collision with player1's tank
             if(player2Projectiles[i].TankCollision(player1))
             {
-                Explosion exp(player2Projectiles[i]._xPosition, player2Projectiles[i]._yPosition, Orange);
-                explosions.push_back(exp);
                 player2Projectiles.erase(player2Projectiles.begin() + i);
                 reset();
             }
+            // Check for collision with the ground
             if(player2Projectiles[i].TerrainCollision(myTerrain.points))
             {
-                Explosion exp(player2Projectiles[i]._xPosition, player2Projectiles[i]._yPosition, Orange);
                 player2Projectiles.erase(player2Projectiles.begin() + i);
             }
         }
@@ -138,8 +202,17 @@ void display( void )
     glFlush();
 }
 
+/*
+    Author: Christian Sieh
+    Original Author: Dr. John Weiss, SDSMT
+
+    Description: This function handles glut special keys such as up, down, left, right.
+                 Left and right are used to move the current player's tank and up and
+                 down are used to change the firing angle.
+*/
 void special( int key, int x, int y )
 {
+    // If there are still projectiles flying around then ignore key presses
     if(player1Projectiles.size() != 0 || player2Projectiles.size() != 0)
     {
         glutPostRedisplay();
@@ -184,8 +257,18 @@ void special( int key, int x, int y )
     glutPostRedisplay();
 }
 
+/*
+    Author: Christian Sieh
+    Original Author: Dr. John Weiss, SDSMT
+
+    Description: This function is to handle keyboard presses. Escape exits
+                 the program, spacebar is for the current player's tank to
+                 shoot, - is to decrease velocity, and + is to increase
+                 velocity.
+*/
 void keyboard( unsigned char key, int x, int y )
 {
+    // If there are still projectiles flying around then ignore key presses
     if(player1Projectiles.size() != 0 || player2Projectiles.size() != 0)
     {
         glutPostRedisplay();
@@ -241,14 +324,20 @@ void keyboard( unsigned char key, int x, int y )
     }
 }
 
+/*
+    Author: Christian Sieh
+
+    Description: This function is resets everything to a new game once
+                 one player has one
+*/
 void reset()
 {
+    player1Projectiles.clear();
+    player2Projectiles.clear();
+
     ScreenWidth = 800;
     ScreenHeight = 600;
     PlayerTurn = 1;
-
-    player1Projectiles.clear();
-    player2Projectiles.clear();
 
     myTerrain.Reset();
     
@@ -264,4 +353,49 @@ void reset()
     player2._yPosition = myTerrain.points[myTerrain.points.size() - player2Point].y;
     player2._angle = 240;
     player2._velocity = 50;
+}
+
+/*
+    Author: Christian Sieh
+
+    Description: This is the draw function to display the velocity and angle
+                 of each player's tank
+*/
+void DrawText()
+{
+    glColor3fv( Black );
+    glMatrixMode(GL_MODELVIEW);
+
+    // Player 1 Velocity
+    glPushMatrix();
+    glTranslatef( 100, ScreenHeight - 100, 0 );
+    glScalef(0.2, -0.2, 0.2);
+    string playerVelocity = "Velocity: " + to_string(player1._velocity);
+    glutStrokeString( GLUT_STROKE_ROMAN, (const unsigned char *)playerVelocity.c_str());
+    glPopMatrix();
+
+    // Player 1 Angle
+    glPushMatrix();
+    glTranslatef( 100, ScreenHeight - 50, 0 );
+    glScalef(0.2, -0.2, 0.2);
+    string playerAngle = "Angle: " + to_string(player1._angle);
+    glutStrokeString( GLUT_STROKE_ROMAN, (const unsigned char *)playerAngle.c_str());
+    glPopMatrix();
+
+    // Player 2 Velocity
+    glPushMatrix();
+    glTranslatef( ScreenWidth - 250, ScreenHeight - 100, 0 );
+    glScalef(0.2, -0.2, 0.2);
+    playerVelocity = "Velocity: " + to_string(player2._velocity);
+    glutStrokeString( GLUT_STROKE_ROMAN, (const unsigned char *)playerVelocity.c_str());
+    glPopMatrix();
+
+    // Player 2 Angle
+    glPushMatrix();
+    glTranslatef( ScreenWidth - 250, ScreenHeight - 50, 0 );
+    glScalef(0.2, -0.2, 0.2);
+    playerAngle = "Angle: " + to_string(player2._angle);
+    glutStrokeString( GLUT_STROKE_ROMAN, (const unsigned char *)playerAngle.c_str());
+    glPopMatrix();
+
 }
